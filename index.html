@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="Algorithm">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Algorithm</title>
+    <link rel="stylesheet" href="web/main.css">
+    <link rel="stylesheet" href="web/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="web/bootstrap/bootstrap-theme-paper.min.css">
+</head>
+
+<body>
+
+    <div class="container-fluid">
+
+        <form class="form-horizontal">
+            <fieldset>
+                <div class="form-group">
+                    <label for="input" class="col-md-4 control-label">input</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="input" placeholder="input data">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="input" class="col-md-4 control-label">method</label>
+                    <div class="dropdown col-md-4">
+                        <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#" href="#">
+                            Dropdown <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">               
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Sorting</a>
+                                <ul class="dropdown-menu">
+                                    <li><a tabindex="-1" href="#" onclick="document.getElementById('output').value=insertionSort(document.getElementById('input').value)">Inserstion Sort</a></li>
+                                    <li><a href="#" onclick="document.getElementById('output').value=mergeSort(document.getElementById('input').value)">Merge Sort</a></li>
+                                    <li class="dropdown-submenu">
+                                        <a href="#">Even More..</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">3rd level</a></li>
+                                            <li><a href="#">3rd level</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="divider"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="output" class="col-md-4 control-label">output</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="output" placeholder="output data">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-2 col-md-offset-4">
+                        <button class="btn btn-primary">run</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+
+    </div>
+
+    <script src="visualization/watch.js"></script>
+    <script src="sorting/insertionSort.js"></script>
+    <script src="sorting/mergeSort.js"></script>
+    <script src="web/bootstrap/jquery.min.js"></script>
+    <script src="web/bootstrap/bootstrap.min.js"></script>
+
+</body>
+
+</html>
