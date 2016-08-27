@@ -1,18 +1,20 @@
-
-
 // sort array in ascending order using insertion sort
 function insertionSort(input) {
-    arr = input.split(",").map(function(e) { return parseInt(e) });
-    startWatch("insertionSort", arr);
-    
-    arr.forEach(function (cur, curIndex) {
+    var arr = input.split(",").map(function(e) {
+        return parseInt(e)
+    });
+
+    arr.forEach(function(cur, curIndex) {
         for (var i = curIndex - 1; i >= 0; --i) {
-            if (cur < arr[i]) arr[i + 1] = arr[i];
-            else break;
+            // @animationArray(arr, range(0, curIndex), range(curIndex, arr.length - curIndex), [i, i + 1])
+            if (cur < arr[i]) {
+                arr[i + 1] = arr[i];
+                arr[i] = cur;
+            } else break;
         }
         arr[i + 1] = cur;
     });
 
-    endWatch(arr);
+    // @animationArray(arr, range(0, arr.length), [], [])
     return arr.join(",");
 }

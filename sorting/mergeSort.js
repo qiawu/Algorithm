@@ -1,7 +1,7 @@
-
 // sort array in ascending order using merge sort
 function mergeSort(input) {
-    arr = input.split(",").map(function (e) { return parseInt(e) });
+    arr = input.split(",").map(function(e) {
+        return parseInt(e) });
     startWatch("mergeSort", arr);
 
     function merge(arr, left, middle, right) {
