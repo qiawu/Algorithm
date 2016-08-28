@@ -29,6 +29,7 @@ function addFuncToAnimationQueue(animateFunc) {
 }
 
 function startAnimate(animateFunc, input) {
+    document.getElementById('animation').innerHTML = ""; // clear previous animation result
     var result = animateFunc(input);
 
     if (animateTimer) clearInterval(animateTimer);
@@ -55,10 +56,11 @@ function printArray(arr) {
 
 // split the array into two parts: part1 and part2 (they are all index set)
 // focus is the set of elements that we will assign arrow above
-function animateArray(arr, part1, part2, focus) {
+// mergeWithPrev is for merging two consecutive animation
+function animateArray(animationKey, arr, part1, part2, focus, mergeWithPrev = false) {
     var arrCopy = arr.slice();
-    animationQueue.push(function() {
-        console.log(arrCopy.join(","));
+    var animationFunc = function() {
+        var spaceForArrow = "<div style='visibility: hidden; height: 30px;'></div>";
         var x = "";
 
         for (var i = 0; i < arrCopy.length; i++) {
@@ -74,7 +76,22 @@ function animateArray(arr, part1, part2, focus) {
             x += "<li " + st + ">" + ext + arrCopy[i] + "</li>";
         }
 
-        document.getElementById('animation').innerHTML = "<ul>" + x + "</ul>";
-    })
+        animationElement = document.getElementById('animation').getElementsByClassName(animationKey)[0];
+        if (animationElement === undefined) {
+            var animationElement = document.createElement("div");
+            animationElement.setAttribute("class", animationKey);
+            document.getElementById('animation').appendChild(animationElement);
+        }
+        animationElement.innerHTML = spaceForArrow + "<ul>" + x + "</ul>";
+    };
+    if (mergeWithPrev) {
+        var prev = animationQueue.pop();
+        animationQueue.push(function() {
+            prev();
+            animationFunc();
+        });
+    } else {
+        animationQueue.push(animationFunc);
+    }
 
 }

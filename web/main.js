@@ -1,9 +1,8 @@
 var alg2Func = {
     "insertionsort": insertionSort,
-    "mergesort": mergeSort
+    "mergesort": mergeSort,
+    "quicksort": quickSort
 }
-
-var enablAnimation = true;
 
 function runAlgorithm() {
     var algo = document.getElementById('algorithmList').options[document.getElementById('algorithmList').selectedIndex].value
@@ -11,6 +10,7 @@ function runAlgorithm() {
 
     var func = alg2Func[algo];
 
+    var enablAnimation = document.getElementById('animationToggle').checked;;
     if (enablAnimation) {
         var animateFunc = algoFunWithAnimation(func);
         document.getElementById('output').value = startAnimate(animateFunc, input);

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="web/main.css">
     <link rel="stylesheet" href="web/css/circle.css">
     <link rel="stylesheet" href="web/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="web/bootstrap/bootstrap-toggle.min.css">
     <link rel="stylesheet" href="web/bootstrap/bootstrap-theme-paper.min.css">
 </head>
 
@@ -26,7 +27,8 @@
                     <label for="input" class="col-md-4 control-label">Algorithm</label>
                     <select id="algorithmList" class="col-md-4">
                         <option value="insertionsort">Insertion Sort</option>
-                        <option value="mergesort" >Merge Sort</option>
+                        <option value="mergesort">Merge Sort</option>
+                        <option value="quicksort">Quick Sort</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -36,11 +38,16 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="animationToggle" class="col-md-4 control-label">animation</label>
+                    <div class="col-md-2">
+                        <input id="animationToggle" checked type="checkbox">
+                    </div>
+                </div>
+                <div class="form-group">
                     <div class="col-md-2 col-md-offset-4">
                         <button class="btn btn-primary" onclick="runAlgorithm(); return false">run</button>
                     </div>
                 </div>
-                <div style="visibility: hidden; height: 36px;"></div>
                 <div class="form-group">
                     <div class="col-md-offset-4" id="animation">
                     </div>
@@ -53,6 +60,7 @@
     <!-- algorithm files -->
     <script src="sorting/insertionSort.js"></script>
     <script src="sorting/mergeSort.js"></script>
+    <script src="sorting/quickSort.js"></script>
 
     <!-- other files -->
     <script src="web/main.js"></script>
@@ -60,6 +68,12 @@
     <script src="visualization/animation.js"></script>
     <script src="web/bootstrap/jquery.min.js"></script>
     <script src="web/bootstrap/bootstrap.min.js"></script>
+    <script src="web/bootstrap/bootstrap-toggle.min.js"></script>
+    <script>
+        $(function() {
+            $('#animationToggle').bootstrapToggle();
+        })
+    </script>
 
 </body>
 

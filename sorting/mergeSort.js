@@ -9,7 +9,9 @@ function mergeSort(input) {
         var rightArr = arr.slice(middle + 1, right + 1);
         var cur = left;
         for (var l = 0, r = 0; l < leftArr.length && r < rightArr.length;) {
-            // @animateArray(arr, range(left, middle - left + 1), range(middle + 1, right - middle), [left + l, middle + 1 + r])
+            // @animateArray("leftArr", leftArr, [], [], [l])
+            // @animateArray("rightArr", rightArr, [], [], [r], true)
+            // @animateArray("arr", arr, range(left, middle - left + 1), range(middle + 1, right - middle), [cur], true)
             if (leftArr[l] < rightArr[r]) {
                 arr[cur++] = leftArr[l++];
             } else {
@@ -17,11 +19,13 @@ function mergeSort(input) {
             }
         }
         while (l < leftArr.length) {
-            // @animateArray(arr, range(left, l + 1), range(middle + 1, right - middle), [cur])
+            // @animateArray("leftArr", leftArr, [], [], [l])
+            // @animateArray("arr", arr, range(left, l + 1), range(middle + 1, right - middle), [cur], true)
             arr[cur++] = leftArr[l++];
         }
         while (r < rightArr.length) {
-            // @animateArray(arr, range(left, middle - left + 1), range(middle + 1, r + 1), [cur])
+            // @animateArray("rightArr", rightArr, [], [], [r])
+            // @animateArray("arr", arr, range(left, middle - left + 1), range(middle + 1, r + 1), [cur], true)
             arr[cur++] = rightArr[r++];
         }
     }
@@ -35,7 +39,7 @@ function mergeSort(input) {
     }
 
     recursiveMergeSort(arr, 0, arr.length - 1);
-    // @animateArray(arr, range(0, arr.length), [], [])
+    // @animateArray("arr", arr, range(0, arr.length), [], [])
 
     return arr.join(",");
 }
