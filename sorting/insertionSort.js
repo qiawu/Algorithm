@@ -6,7 +6,7 @@ function insertionSort(input) {
 
     arr.forEach(function(cur, curIndex) {
         for (var i = curIndex - 1; i >= 0; --i) {
-            // @animationArray(arr, range(0, curIndex), range(curIndex, arr.length - curIndex), [i, i + 1])
+            // @animateArray(arr, range(0, curIndex), range(curIndex, arr.length - curIndex), [i, i + 1])
             if (cur < arr[i]) {
                 arr[i + 1] = arr[i];
                 arr[i] = cur;
@@ -15,6 +15,6 @@ function insertionSort(input) {
         arr[i + 1] = cur;
     });
 
-    // @animationArray(arr, range(0, arr.length), [], [])
+    // @animateArray(arr, range(0, arr.length), [], [])
     return arr.join(",");
 }
