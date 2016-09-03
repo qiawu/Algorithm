@@ -1,7 +1,8 @@
 var alg2Func = {
     "insertionsort": insertionSort,
     "mergesort": mergeSort,
-    "quicksort": quickSort
+    "quicksort": quickSort,
+    "heapsort": heapSort
 }
 
 function runAlgorithm() {
