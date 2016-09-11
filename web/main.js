@@ -2,7 +2,8 @@ var alg2Func = {
     "insertionsort": insertionSort,
     "mergesort": mergeSort,
     "quicksort": quickSort,
-    "heapsort": heapSort
+    "heapsort": heapSort,
+    "testTree": testTree
 }
 
 function runAlgorithm() {
