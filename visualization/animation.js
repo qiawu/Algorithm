@@ -35,7 +35,6 @@ function startAnimate(animateFunc, input) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     ctx.lineWidth = 3;
-    ctx.beginPath();
 
     var result = animateFunc(input);
 
@@ -43,6 +42,8 @@ function startAnimate(animateFunc, input) {
     var index = 0;
     animateTimer = setInterval(function() {
         if (index < animationQueue.length) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
             animationQueue[index++]();
             ctx.closePath();
         } else endAnimate();
@@ -54,6 +55,32 @@ function startAnimate(animateFunc, input) {
 function endAnimate() {
     animationQueue = [];
     clearInterval(animateTimer);
+}
+
+function getPosition(el) {
+    var xPos = 0;
+    var yPos = 0;
+
+    while (el) {
+        if (el.tagName == "BODY") {
+            // deal with browser quirks with body/window/document and page scroll
+            var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
+            var yScroll = el.scrollTop || document.documentElement.scrollTop;
+
+            xPos += (el.offsetLeft - xScroll + el.clientLeft);
+            yPos += (el.offsetTop - yScroll + el.clientTop);
+        } else {
+            // for all other non-BODY elements
+            xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+            yPos += (el.offsetTop - el.scrollTop + el.clientTop);
+        }
+
+        el = el.offsetParent;
+    }
+    return {
+        x: xPos,
+        y: yPos
+    };
 }
 
 /***************************************************** different animation function for different types ***********************************************/
@@ -93,6 +120,9 @@ function insertCircleLine(key, circleInfos) {
             circle.innerHTML += "<span id='arrow' >&darr;</span>";
         }
         circle.innerHTML += info.content;
+        if (info.content === undefined) {
+            circle.style.visibility = "hidden";
+        }
 
         line.appendChild(circle);
 
@@ -104,8 +134,10 @@ function insertCircleLine(key, circleInfos) {
 function drawLine(e1, e2) {
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
-    ctx.moveTo(e1.offsetLeft + e1.offsetWidth / 2, e1.offsetTop + e1.clientHeight);
-    ctx.lineTo(e2.offsetLeft + e2.offsetWidth / 2, e2.offsetTop);
+    var pos1 = getPosition(e1);
+    var pos2 = getPosition(e2);
+    ctx.moveTo(pos1.x + e1.offsetWidth / 2, pos1.y + e1.clientHeight);
+    ctx.lineTo(pos2.x + e2.offsetWidth / 2, pos2.y);
     ctx.stroke();
 
 }
@@ -145,18 +177,17 @@ function animateArray(animationKey, arr, part1, part2, focus = [], mergeWithPrev
 }
 
 function animateTree(animationKey, tree, focus = [], mergeWithPrev = false) {
-    var treeInfo = tree2TreeInfo(tree);
+    var treeInfo = tree2TreeInfo(tree, focus);
     var animationFunc = function() {
 
         treeInfo.reduce(function(prevNodes, arr, level) {
             var circleInfos = arr.map(function(item, index) {
                 var info = {};
                 info.class = [];
-                info.hasArrow = false;
+                info.hasArrow = false; // no arrow in tree to avoid element moving
                 info.content = item.data;
-                if (focus.indexOf(index) !== -1) {
+                if (item["focus"]) {
                     info.class = ["focus"];
-                    info.hasArrow = true;
                 }
                 return info;
             });
@@ -176,6 +207,15 @@ function animateTree(animationKey, tree, focus = [], mergeWithPrev = false) {
         }, []);
 
     };
-    animationFunc();
+
+    if (mergeWithPrev) {
+        var prev = animationQueue.pop();
+        animationQueue.push(function() {
+            prev && prev();
+            animationFunc();
+        });
+    } else {
+        animationQueue.push(animationFunc);
+    }
 
 }
