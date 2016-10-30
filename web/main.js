@@ -3,7 +3,6 @@ var alg2Func = {
     "mergesort": mergeSort,
     "quicksort": quickSort,
     "heapsort": heapSort,
-    "testTree": testTree,
     "bstSort": bstSort
 }
 
