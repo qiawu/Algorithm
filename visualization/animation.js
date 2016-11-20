@@ -34,7 +34,6 @@ function startAnimate(animateFunc, input) {
     var ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    ctx.lineWidth = 3;
 
     var result = animateFunc(input);
 
@@ -43,9 +42,9 @@ function startAnimate(animateFunc, input) {
     animateTimer = setInterval(function() {
         if (index < animationQueue.length) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.beginPath();
+            //ctx.beginPath();
             animationQueue[index++]();
-            ctx.closePath();
+            //ctx.closePath();
         } else endAnimate();
     }, speed);
 
@@ -130,31 +129,62 @@ function insertCircleLine(key, circleInfos) {
     });
 }
 
+function drawLineByCanvas(fromx, fromy, tox, toy, arrowLine = false) {
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    ctx.lineWidth = 3;
+    var headlen = 10;
+
+    var angle = Math.atan2(toy - fromy, tox - fromx);
+
+    //starting path of the arrow from the start square to the end square and drawing the stroke
+    ctx.beginPath();
+    ctx.moveTo(fromx, fromy);
+    ctx.lineTo(tox, toy);
+    ctx.strokeStyle = "#cc0000";
+    ctx.stroke();
+
+    if (arrowLine) {
+        //starting a new path from the head of the arrow to one of the sides of the point
+        ctx.beginPath();
+        ctx.moveTo(tox, toy);
+        ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 7), toy - headlen * Math.sin(angle - Math.PI / 7));
+
+        //path from the side point of the arrow, to the other side point
+        ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 7), toy - headlen * Math.sin(angle + Math.PI / 7));
+
+        //path from the side point back to the tip of the arrow, and then again to the opposite side point
+        ctx.lineTo(tox, toy);
+        ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 7), toy - headlen * Math.sin(angle - Math.PI / 7));
+
+        //draws the paths created above
+        ctx.strokeStyle = "#cc0000";
+        ctx.stroke();
+        ctx.fillStyle = "#cc0000";
+        ctx.fill();
+    }
+
+}
+
 // draw a line between two elements
-function drawLine(e1, e2) {
+function drawLine(e1, e2, arrowLine = false) {
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
     var pos1 = getPosition(e1);
     var pos2 = getPosition(e2);
     if (pos1.y < pos2.y) {
-        ctx.moveTo(pos1.x + e1.offsetWidth / 2, pos1.y + e1.clientHeight);
-        ctx.lineTo(pos2.x + e2.offsetWidth / 2, pos2.y);
+        drawLineByCanvas(pos1.x + e1.offsetWidth / 2, pos1.y + e1.clientHeight, pos2.x + e2.offsetWidth / 2, pos2.y, arrowLine);
     }
     if (pos1.y > pos2.y) {
-        ctx.moveTo(pos2.x + e2.offsetWidth / 2, pos2.y + e2.clientHeight);
-        ctx.lineTo(pos1.x + e1.offsetWidth / 2, pos1.y);
+        drawLineByCanvas(pos1.x + e1.offsetWidth / 2, pos1.y, pos2.x + e2.offsetWidth / 2, pos2.y + e2.clientHeight, arrowLine);
     }
     if (pos1.y === pos2.y) {
         if (pos1.x < pos2.x) {
-            ctx.moveTo(pos1.x + e1.clientWidth, pos1.y + e1.offsetHeight / 2);
-            ctx.lineTo(pos2.x, pos2.y + e2.offsetHeight / 2);
+            drawLineByCanvas(pos1.x + e1.clientWidth, pos1.y + e1.offsetHeight / 2, pos2.x, pos2.y + e2.offsetHeight / 2, arrowLine);
         } else {
-            ctx.moveTo(pos2.x + e2.clientWidth, pos2.y + e2.offsetHeight / 2);
-            ctx.lineTo(pos1.x, pos1.y + e1.offsetHeight / 2);
+            drawLineByCanvas(pos1.x, pos1.y + e1.offsetHeight / 2, pos2.x + e2.clientWidth, pos2.y + e2.offsetHeight / 2, arrowLine);
         }
     }
-
-    ctx.stroke();
 
 }
 
@@ -266,7 +296,7 @@ function animateGraph(animationKey, graph, focus = [], mergeWithPrev = false) {
         graphInfo.forEach(function(arr, level) {
             arr.forEach(function(node) {
                 node.neighbors.forEach(function(ngb) {
-                    drawLine(node.circle, ngb.circle);
+                    drawLine(node.circle, ngb.circle, graph.directed);
                 });
             });
         })
