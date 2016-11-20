@@ -141,7 +141,7 @@ function drawLineByCanvas(fromx, fromy, tox, toy, arrowLine = false) {
     ctx.beginPath();
     ctx.moveTo(fromx, fromy);
     ctx.lineTo(tox, toy);
-    ctx.strokeStyle = "#cc0000";
+    //ctx.strokeStyle = "#cc0000";
     ctx.stroke();
 
     if (arrowLine) {
@@ -158,9 +158,9 @@ function drawLineByCanvas(fromx, fromy, tox, toy, arrowLine = false) {
         ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 7), toy - headlen * Math.sin(angle - Math.PI / 7));
 
         //draws the paths created above
-        ctx.strokeStyle = "#cc0000";
+        //ctx.strokeStyle = "#cc0000";
         ctx.stroke();
-        ctx.fillStyle = "#cc0000";
+        //ctx.fillStyle = "#cc0000";
         ctx.fill();
     }
 
@@ -275,7 +275,7 @@ function animateGraph(animationKey, graph, focus = [], mergeWithPrev = false) {
             var circleInfos = arr.map(function(item, index) {
                 var info = {};
                 info.class = [];
-                info.hasArrow = false; // no arrow in tree to avoid element moving
+                info.hasArrow = false; // no arrow in graph to avoid element moving
                 info.content = item.data;
                 if (item["focus"]) {
                     info.class = ["focus"];

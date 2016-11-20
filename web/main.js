@@ -4,7 +4,7 @@ var alg2Func = {
     "quicksort": quickSort,
     "heapsort": heapSort,
     "bstSort": bstSort,
-    "buildGraph": buildGraph
+    "graphDFS": graphDFS
 }
 
 function runAlgorithm() {

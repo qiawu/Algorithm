@@ -1,7 +1,7 @@
 function Graph(directed = false) {
 
     this.directed = directed;
-    this.nodeMap = undefined;
+    this.nodeMap = undefined; // key to node map
     this.buildFromPairs = function(pairs) {
         var dict = pairs.reduce(function(acc, p) {
             if (p.length < 2) {
@@ -66,23 +66,75 @@ function Graph(directed = false) {
         }
     };
 
+    this.DFS = function(visitFunc) {
+        var myself = this;
+        var curTime = -1;
+
+        function recursiveDFS(source, visitFunc) {
+            if (source.tag === undefined) {
+                curTime += 1;
+                source.tag = false; // under visit
+                source.info.start = curTime;
+                visitFunc(source);
+                myself.adjs(source).forEach(function(adj) {
+                    adj.info.parent = source;
+                    recursiveDFS(adj, visitFunc);
+                });
+                curTime += 1;
+                source.tag = true; // visited
+                source.info.end = curTime;
+            }
+        }
+        var nodes = myself.getAllNodes();
+        nodes.forEach(function(n) {
+            n.tag = undefined; // unvisited
+        });
+        nodes.forEach(function(n) {
+            recursiveDFS(n, visitFunc);
+        });
+    };
+
+    this.copy = function() {
+        var copyGraph = new Graph(this.directed);
+        var oldNodes = this.getAllNodes();
+        var newNodes = oldNodes.map(n => new GraphNode(n.data));
+        var newNodeMap = newNodes.reduce(function(acc, n) {
+            acc[n.data] = n;
+            return acc;
+        }, {});
+        // copy neighbors
+        oldNodes.forEach(function(oldNode, index) {
+            newNodes[index].neighbors = Object.keys(oldNode.neighbors).reduce(function(acc, ngbKey) {
+                acc[ngbKey] = true;
+                return acc;
+            }, {});
+        });
+        copyGraph.nodeMap = newNodeMap;
+        return copyGraph;
+    }
+
 }
 
 function GraphNode(data) {
     this.data = data;
     this.neighbors = {}; // we may store edge info here
     this.tag = undefined;
-    this.info = undefined;
+    this.info = {};
 }
 
-function buildGraph(input) {
+function graphDFS(input) {
     var pairs = eval(input);
 
     var graph = new Graph();
     graph.buildFromPairs(pairs);
-    // @animateGraph("graph", graph, [])
 
     var result = [];
+    var visitFunc = function(n) {
+        result.push(n.data);
+        // @animateGraph("graph", graph, [n])
+        // @animateArray("result", result, range(0, result.length), [], [result.length - 1], true)
+    };
+    graph.DFS(visitFunc);
 
     return result.join(",");
 }

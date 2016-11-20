@@ -73,24 +73,10 @@ function treeToJson(binTree) {
     return recursiveTree2Json(binTree.root);
 }
 
-function ajacentArray2BinTree(strArray) {
-    function extractNode(nodeArr, treeArr) {
-        if (nodeArr === undefined || nodeArr.length <= 0) throw new Error("invalid node")
-        var leftNode = nodeArr[1] && treeArr[nodeArr[1]] && extractNode(treeArr[nodeArr[1]], treeArr);
-        var rightNode = nodeArr[2] && treeArr[nodeArr[2]] && extractNode(treeArr[nodeArr[2]], treeArr);
-        return new BinaryTreeNode(nodeArr[0], leftNode, rightNode);
-    }
-    var treeArr = eval(strArray);
-    return new BinaryTree(extractNode(treeArr[0], treeArr));
-}
-
-function ajacentArray2Tree(strArray) {
-    ajacent = eval(strArray);
-
-}
-
 function graph2GraphInfo(graph, focusNodes) {
-    var allNodes = graph.getAllNodes();
+    var copyGraph = graph.copy();
+    var copyFocusNodes = focusNodes.map(n => copyGraph.getNode(n.data));
+    var allNodes = copyGraph.getAllNodes();
     if (allNodes.length <= 0) return [];
     var source = allNodes[0];
     var multiArrs = [];
@@ -99,7 +85,7 @@ function graph2GraphInfo(graph, focusNodes) {
         if (multiArrs[level] === undefined) multiArrs[level] = [];
         multiArrs[level].push(node);
     };
-    graph.BFS(source, visitFunc);
+    copyGraph.BFS(source, visitFunc);
 
     // add neighbors info
     /* example: [
@@ -109,7 +95,7 @@ function graph2GraphInfo(graph, focusNodes) {
     */
     var graphInfo = multiArrs.map(function(arr) {
         var infoArr = arr.map(function(node) {
-            var isFocus = (focusNodes.indexOf(node) != -1);
+            var isFocus = (copyFocusNodes.indexOf(node) != -1);
             // create each node info for the graph
             return {
                 "data": node.data,
@@ -122,7 +108,7 @@ function graph2GraphInfo(graph, focusNodes) {
     multiArrs.forEach(function(arr, level) {
         arr.forEach(function(node, index) {
             // find all neighbors in all levels
-            var neighborNodes = graph.adjs(node);
+            var neighborNodes = copyGraph.adjs(node);
             neighborNodes.forEach(function(ngb) {
                 var ngbLevel = ngb.info["dis"];
                 var ngbIndex = multiArrs[ngbLevel].indexOf(ngb);
