@@ -16,7 +16,7 @@ function tree2TreeInfo(tree, focusNodes) {
     var visitFunc = function(node, level) {
         if (multiArrs[level] === undefined) multiArrs[level] = [];
         multiArrs[level].push(node);
-    }
+    };
     tree.BFS(visitFunc, tree.root);
 
     // add parent-child info
@@ -87,4 +87,50 @@ function ajacentArray2BinTree(strArray) {
 function ajacentArray2Tree(strArray) {
     ajacent = eval(strArray);
 
+}
+
+function graph2GraphInfo(graph, focusNodes) {
+    var allNodes = graph.getAllNodes();
+    if (allNodes.length <= 0) return [];
+    var source = allNodes[0];
+    var multiArrs = [];
+    var visitFunc = function(node) {
+        var level = node.info["dis"];
+        if (multiArrs[level] === undefined) multiArrs[level] = [];
+        multiArrs[level].push(node);
+    };
+    graph.BFS(source, visitFunc);
+
+    // add neighbors info
+    /* example: [
+        [{"data": 10, "neighbors": [info1, info2]}],                                // first level
+        [{"data": 20, "neighbors": []}, {"data": 50, "neighbors": []}]              // second level
+    ]
+    */
+    var graphInfo = multiArrs.map(function(arr) {
+        var infoArr = arr.map(function(node) {
+            var isFocus = (focusNodes.indexOf(node) != -1);
+            // create each node info for the graph
+            return {
+                "data": node.data,
+                "neighbors": [],
+                "focus": isFocus
+            };
+        });
+        return infoArr;
+    });
+    multiArrs.forEach(function(arr, level) {
+        arr.forEach(function(node, index) {
+            // find all neighbors in all levels
+            var neighborNodes = graph.adjs(node);
+            neighborNodes.forEach(function(ngb) {
+                var ngbLevel = ngb.info["dis"];
+                var ngbIndex = multiArrs[ngbLevel].indexOf(ngb);
+                graphInfo[level][index]["neighbors"].push(graphInfo[ngbLevel][ngbIndex]);
+            });
+
+        });
+    });
+
+    return graphInfo;
 }

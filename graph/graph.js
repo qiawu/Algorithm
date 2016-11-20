@@ -1,9 +1,7 @@
-function Graph() {
-    this.BFS = function(source, visitFunc) {};
-}
+function Graph(directed = false) {
 
-function AdjListGraph() {
-    this.nodes = undefined;
+    this.directed = directed;
+    this.nodeMap = undefined;
     this.buildFromPairs = function(pairs) {
         var dict = pairs.reduce(function(acc, p) {
             if (p.length < 2) {
@@ -11,66 +9,80 @@ function AdjListGraph() {
             } else {
                 if (acc[p[0]] === undefined) {
                     acc[p[0]] = {};
-                } else {
-                    acc[p[0]][p[1]] = true;
+                }
+                acc[p[0]][p[1]] = true;
+                if (!directed) {
+                    if (acc[p[1]] === undefined) {
+                        acc[p[1]] = {};
+                    }
+                    acc[p[1]][p[0]] = true;
                 }
             }
             return acc;
-        }, {})
-        this.nodes = Object.keys(dict).map(function(k) {
-            var head = new AdjListGraphNode(k);
-            Object.keys(dict[k]).reduce(function(curNode, adj) {
-                var adjNode = new AdjListGraphNode(adj);
-                curNode.next = adjNode;
-                return adjNode;
-            }, head);
-            return head;
+        }, {});
+        var nodeMap = Object.keys(dict).reduce(function(acc, k) {
+            acc[k] = new GraphNode(k);
+            return acc;
+        }, {});
+        // fill neighbors
+        Object.keys(nodeMap).forEach(function(nodeKey) {
+            var neighborKeys = Object.keys(dict[nodeKey]);
+            neighborKeys.forEach(ngbKey => nodeMap[nodeKey].neighbors[ngbKey] = true);
         });
+        this.nodeMap = nodeMap;
     };
     this.adjs = function(node) {
-        return node.adjs();
+        var nodeMap = this.nodeMap;
+        return Object.keys(node.neighbors).map(ngbKey => nodeMap[ngbKey]);
+    };
+
+    this.getAllNodes = function() {
+        var nodeMap = this.nodeMap;
+        return Object.keys(nodeMap).map(k => nodeMap[k]);
+    };
+
+    this.getNode = function(key) {
+        return this.nodeMap[key];
     }
-}
 
-function AdjListGraphNode(data, next = undefined) {
-    this.data = data;
-    this.next = next;
-    this.adjs = function() {
-        var result = [];
-        var cur = this.next;
-        while (cur !== null) {
-            result.push(cur);
-            cur = cur.next;
-        }
-        return result;
-    }
-}
-
-AdjListGraph.prototype = new Graph();
-AdjListGraph.constructor = AdjListGraph;
-
-function AdjMatrixGraph() {
-    this.nodes = undefined;
-    this.buildFromPairs = function(pairs) {
-        var dict = pairs.reduce(function(acc, p) {
-            if (p.length < 2) {
-                console.log("warning: ignore invalid pair: " + p);
-            } else {
-                if (acc[p[0]] === undefined) {
-                    acc[p[0]] = {};
-                } else {
-                    acc[p[0]][p[1]] = true;
+    this.BFS = function(source, visitFunc) {
+        this.getAllNodes().forEach(function(n) {
+            n.tag = undefined; // unvisited
+        });
+        var queue = [source];
+        source.tag = false; // under visit
+        source.info = { "prev": null, "dis": 0 }; // use info to trace back the path
+        while (queue.length > 0) {
+            var cur = queue.shift();
+            this.adjs(cur).forEach(function(n) {
+                if (n.tag === undefined) {
+                    n.tag = false; // under visit
+                    n.info = { "prev": cur, "dis": cur.info.dis + 1 };
+                    queue.push(n);
                 }
-            }
-            return acc;
-        }, {})
-        this.nodes = dict;
+            });
+            visitFunc(cur);
+            cur.tag = true; // visited
+        }
     };
 
-    this.adjs = function(node) {
-        return Object.keys(this.nodes[node]);
-    }
 }
 
-AdjMatrixGraph.prototype = new Graph();
-AdjMatrixGraph.constructor = AdjMatrixGraph;
+function GraphNode(data) {
+    this.data = data;
+    this.neighbors = {}; // we may store edge info here
+    this.tag = undefined;
+    this.info = undefined;
+}
+
+function buildGraph(input) {
+    var pairs = eval(input);
+
+    var graph = new Graph();
+    graph.buildFromPairs(pairs);
+    // @animateGraph("graph", graph, [])
+
+    var result = [];
+
+    return result.join(",");
+}

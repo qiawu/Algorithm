@@ -3,7 +3,8 @@ var alg2Func = {
     "mergesort": mergeSort,
     "quicksort": quickSort,
     "heapsort": heapSort,
-    "bstSort": bstSort
+    "bstSort": bstSort,
+    "buildGraph": buildGraph
 }
 
 function runAlgorithm() {

@@ -136,8 +136,24 @@ function drawLine(e1, e2) {
     var ctx = canvas.getContext("2d");
     var pos1 = getPosition(e1);
     var pos2 = getPosition(e2);
-    ctx.moveTo(pos1.x + e1.offsetWidth / 2, pos1.y + e1.clientHeight);
-    ctx.lineTo(pos2.x + e2.offsetWidth / 2, pos2.y);
+    if (pos1.y < pos2.y) {
+        ctx.moveTo(pos1.x + e1.offsetWidth / 2, pos1.y + e1.clientHeight);
+        ctx.lineTo(pos2.x + e2.offsetWidth / 2, pos2.y);
+    }
+    if (pos1.y > pos2.y) {
+        ctx.moveTo(pos2.x + e2.offsetWidth / 2, pos2.y + e2.clientHeight);
+        ctx.lineTo(pos1.x + e1.offsetWidth / 2, pos1.y);
+    }
+    if (pos1.y === pos2.y) {
+        if (pos1.x < pos2.x) {
+            ctx.moveTo(pos1.x + e1.clientWidth, pos1.y + e1.offsetHeight / 2);
+            ctx.lineTo(pos2.x, pos2.y + e2.offsetHeight / 2);
+        } else {
+            ctx.moveTo(pos2.x + e2.clientWidth, pos2.y + e2.offsetHeight / 2);
+            ctx.lineTo(pos1.x, pos1.y + e1.offsetHeight / 2);
+        }
+    }
+
     ctx.stroke();
 
 }
@@ -218,4 +234,52 @@ function animateTree(animationKey, tree, focus = [], mergeWithPrev = false) {
         animationQueue.push(animationFunc);
     }
 
+}
+
+function animateGraph(animationKey, graph, focus = [], mergeWithPrev = false) {
+    var graphInfo = graph2GraphInfo(graph, focus);
+    var animationFunc = function() {
+
+        // draw circle
+        graphInfo.forEach(function(arr, level) {
+            var circleInfos = arr.map(function(item, index) {
+                var info = {};
+                info.class = [];
+                info.hasArrow = false; // no arrow in tree to avoid element moving
+                info.content = item.data;
+                if (item["focus"]) {
+                    info.class = ["focus"];
+                }
+                return info;
+            });
+            var circles = insertCircleLine(animationKey + level, circleInfos);
+
+            arr.forEach(function(item, index) {
+                item.circle = circles[index];
+            });
+
+            return arr;
+
+        });
+
+        //draw lines between circles
+        graphInfo.forEach(function(arr, level) {
+            arr.forEach(function(node) {
+                node.neighbors.forEach(function(ngb) {
+                    drawLine(node.circle, ngb.circle);
+                });
+            });
+        })
+
+    };
+
+    if (mergeWithPrev) {
+        var prev = animationQueue.pop();
+        animationQueue.push(function() {
+            prev && prev();
+            animationFunc();
+        });
+    } else {
+        animationQueue.push(animationFunc);
+    }
 }
